@@ -1,56 +1,75 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Main {
+    static ArrayList<Integer>[] nodes;
+    static boolean[] visited;
+    static int result = 0;
+    static int recur = 0;
+    static int[] depth;
+
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int num = Integer.parseInt(br.readLine());
         StringTokenizer st = new StringTokenizer(br.readLine());
-        long[] input = new long[num];
 
-        int count = 0;
+        int node = Integer.parseInt(st.nextToken());
+        int edge = Integer.parseInt(st.nextToken());
 
-        for(int i = 0; i < num ; i++)
+        nodes = new ArrayList[node];
+        visited = new boolean[node];
+        depth = new int[node];
+
+        for(int i = 0; i < node ; i++)
         {
-            input[i] = Long.parseLong(st.nextToken());
+            nodes[i] = new ArrayList<>();
         }
 
-        Arrays.sort(input);
-
-        int i,j;
-        long find;
-
-        for(int k = 0; k < num ; k++)
+        for(int i = 0; i < edge ; i++)
         {
-            find = input[k];
-            i = 0;
-            j = num-1;
+            st = new StringTokenizer(br.readLine());
+            int s = Integer.parseInt(st.nextToken());
+            int d = Integer.parseInt(st.nextToken());
 
-            while(i < j)
-            {
-                if(input[i] + input[j] == find){
-                    if(i != k && j != k)
-                    {
-                        count++;
-                        break;
-                    } else if (i == k) {
-                        i++;
-                    } else if (j == k) {
-                        j--;
-                    }
-                } else if (input[i] + input[j] < find) {
-                    i++;
-                } else {
-                    j--;
-                }
+            nodes[s].add(d);
+            nodes[d].add(s);
+        }
+
+        for(int i=0; i<node; i++){
+            DFS(i);
+            visited = new boolean[node];
+        }
+
+
+        int res = 0;
+
+        for(int i = 0 ; i< depth.length - 1; i++)
+        {
+            if(depth[i] >= 4)  {
+                res = 1;
+                break;
             }
         }
 
-        System.out.println(count);
-        br.close();
+        System.out.println(res);
+
+    }
+
+    public static void DFS(int index)
+    {
+        visited[index] = true;
+        for(int i:nodes[index])
+        {
+            if(!visited[i]) {
+                visited[i] = true;
+                depth[index]++;
+                DFS(i);
+                visited[i] = false;
+            }
+        }
     }
 }
